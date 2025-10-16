@@ -1,0 +1,233 @@
+
+<!doctype html>
+
+<html lang="ta">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Flipkart-like Demo</title>
+  <style>
+    /* ====== Basic Reset ====== */
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter, system-ui, Arial, sans-serif;background:#f5f7fb;color:#111}/* ====== Header ====== */
+.header{background:#2874f0;color:white;padding:12px 20px;display:flex;align-items:center;gap:16px}
+.logo{font-weight:800;font-size:20px;letter-spacing:0.4px}
+.search{flex:1;display:flex}
+.search input{flex:1;padding:8px 12px;border-radius:2px;border:none}
+.search button{background:#ffe082;border:none;padding:8px 12px;margin-left:8px;border-radius:2px;cursor:pointer}
+.nav-actions{display:flex;gap:12px;align-items:center}
+.btn{background:transparent;color:white;border:1px solid rgba(255,255,255,0.22);padding:6px 10px;border-radius:4px;cursor:pointer}
+
+/* ====== Hero ====== */
+.hero{display:flex;gap:20px;padding:18px 20px;background:linear-gradient(90deg,#ffffff,#f0f6ff)}
+.hero-left{flex:1}
+.hero-right{width:320px}
+.banner{background:#fff;border-radius:8px;padding:18px;box-shadow:0 8px 20px rgba(40,116,240,0.08)}
+
+/* ====== Categories ====== */
+.categories{display:flex;gap:12px;padding:12px 20px;overflow:auto}
+.cat{background:white;padding:10px 14px;border-radius:8px;min-width:120px;text-align:center;box-shadow:0 6px 14px rgba(16,24,40,0.04)}
+
+/* ====== Product Grid ====== */
+.container{padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.card{background:white;border-radius:8px;padding:12px;box-shadow:0 6px 18px rgba(16,24,40,0.04);display:flex;flex-direction:column;gap:8px}
+.card img{width:100%;height:160px;object-fit:contain;background:linear-gradient(180deg,#fff,#f8fbff);border-radius:6px}
+.title{font-size:14px;font-weight:600;color:#111}
+.price{font-size:15px;color:#111;font-weight:700}
+.old{font-size:12px;color:#6b7280;text-decoration:line-through}
+.actions{display:flex;gap:8px;margin-top:auto}
+.primary{background:#ff6f61;color:white;padding:8px;border:none;border-radius:6px;cursor:pointer;flex:1}
+.secondary{border:1px solid #e5e7eb;padding:8px;border-radius:6px;background:white;cursor:pointer}
+
+/* ====== Cart Panel ====== */
+.cart-toggle{position:relative}
+.cart-count{position:absolute;top:-6px;right:-8px;background:#ff4d4f;color:white;border-radius:999px;padding:2px 6px;font-size:12px}
+.cart-panel{position:fixed;right:18px;top:70px;width:360px;max-height:70vh;background:white;border-radius:8px;box-shadow:0 12px 30px rgba(2,6,23,0.2);overflow:auto;padding:12px;display:none;flex-direction:column;gap:8px}
+.cart-item{display:flex;gap:10px;align-items:center;padding:8px;border-bottom:1px solid #f1f5f9}
+
+/* ====== Footer ====== */
+footer{padding:18px 20px;text-align:center;color:#6b7280}
+
+/* ====== Responsive ====== */
+@media (max-width:800px){
+  .hero{flex-direction:column}
+  .hero-right{width:100%}
+  .search input{padding:10px}
+}
+
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">MyKart</div>
+    <div class="search">
+      <input id="searchInput" placeholder="Search for products, brands and more" />
+      <button id="searchBtn">Search</button>
+    </div>
+    <div class="nav-actions">
+      <button class="btn">Login</button>
+      <div class="cart-toggle">
+        <button id="cartBtn" class="btn">Cart</button>
+        <div id="cartCount" class="cart-count" style="display:none">0</div>
+      </div>
+    </div>
+  </header>  <section class="hero">
+    <div class="hero-left">
+      <div class="banner">
+        <h2 style="margin-bottom:8px">Big Savings on Electronics</h2>
+        <p style="color:#374151">Daily deals, top brands — best prices. Example flipkart-like hero banner.</p>
+      </div>
+      <div class="categories" style="margin-top:12px">
+        <div class="cat">Mobiles</div>
+        <div class="cat">Electronics</div>
+        <div class="cat">Fashion</div>
+        <div class="cat">Home</div>
+        <div class="cat">Appliances</div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="banner">
+        <h4>Offer of the day</h4>
+        <img src="https://via.placeholder.com/300x160?text=Deal" alt="offer" style="width:100%;border-radius:6px;margin-top:8px" />
+      </div>
+    </div>
+  </section>  <main class="container">
+    <h3 style="margin-bottom:12px">Recommended for you</h3>
+    <div class="grid" id="productGrid">
+      <!-- Products will be inserted by JS -->
+    </div>
+  </main>  <div id="cartPanel" class="cart-panel" aria-hidden="true">
+    <h4>Your Cart</h4>
+    <div id="cartItems"></div>
+    <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+      <strong id="cartTotal">Total: ₹0</strong>
+      <button id="checkoutBtn" class="primary">Checkout</button>
+    </div>
+  </div>  <footer>
+    © MyKart demo — Designed for learning. Not affiliated with Flipkart.
+  </footer>  <script>
+    // ====== Sample product data ======
+    const products = [
+      {id:1,name:'Smartphone X Pro',price:19999,old:24999,img:'https://via.placeholder.com/300x300?text=Phone'},
+      {id:2,name:'Wireless Headphones',price:2999,old:3999,img:'https://via.placeholder.com/300x300?text=Headphones'},
+      {id:3,name:'Smart TV 43"',price:28999,old:34999,img:'https://via.placeholder.com/300x300?text=TV'},
+      {id:4,name:'Running Shoes',price:1499,old:2499,img:'https://via.placeholder.com/300x300?text=Shoes'},
+      {id:5,name:'Microwave Oven',price:4999,old:6999,img:'https://via.placeholder.com/300x300?text=Microwave'},
+      {id:6,name:'Backpack',price:899,old:1299,img:'https://via.placeholder.com/300x300?text=Bag'}
+    ];
+
+    // ====== Render products ======
+    const grid = document.getElementById('productGrid');
+    function renderProducts(list){
+      grid.innerHTML = '';
+      list.forEach(p=>{
+        const card = document.createElement('div');card.className='card';
+        card.innerHTML = `
+          <img src="${p.img}" alt="${p.name}" />
+          <div class="title">${p.name}</div>
+          <div>
+            <span class="price">₹${p.price.toLocaleString()}</span>
+            <span class="old"> ₹${p.old.toLocaleString()}</span>
+          </div>
+          <div class="actions">
+            <button class="primary" data-id="${p.id}">Add to cart</button>
+            <button class="secondary" data-id="${p.id}">Quick view</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      })
+    }
+    renderProducts(products);
+
+    // ====== Simple cart logic ======
+    const cart = {};
+    const cartBtn = document.getElementById('cartBtn');
+    const cartPanel = document.getElementById('cartPanel');
+    const cartItemsEl = document.getElementById('cartItems');
+    const cartCountEl = document.getElementById('cartCount');
+    const cartTotalEl = document.getElementById('cartTotal');
+
+    function updateCartUI(){
+      // count
+      const count = Object.values(cart).reduce((s,i)=>s+i.qty,0);
+      if(count>0){cartCountEl.style.display='block';cartCountEl.textContent=count}else{cartCountEl.style.display='none'}
+      // items
+      cartItemsEl.innerHTML = '';
+      let total = 0;
+      for(const id in cart){
+        const item = cart[id];
+        const el = document.createElement('div');el.className='cart-item';
+        el.innerHTML = `
+          <img src="${item.img}" style="width:64px;height:64px;object-fit:contain;border-radius:6px" />
+          <div style="flex:1">
+            <div style="font-weight:600">${item.name}</div>
+            <div>₹${(item.price*item.qty).toLocaleString()} <small style="color:#6b7280">(₹${item.price} x ${item.qty})</small></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+            <button class="secondary" data-action="inc" data-id="${id}">+</button>
+            <button class="secondary" data-action="dec" data-id="${id}">-</button>
+          </div>
+        `;
+        cartItemsEl.appendChild(el);
+        total += item.price * item.qty;
+      }
+      cartTotalEl.textContent = `Total: ₹${total.toLocaleString()}`;
+    }
+
+    // Add to cart
+    document.addEventListener('click', e=>{
+      const add = e.target.closest('.primary');
+      if(add){
+        const id = add.dataset.id;
+        const p = products.find(x=>x.id==id);
+        if(cart[id]) cart[id].qty += 1; else cart[id] = {...p,qty:1};
+        updateCartUI();
+        return;
+      }
+      const quick = e.target.closest('.secondary');
+      if(quick && quick.dataset.id){
+        const id = quick.dataset.id;
+        const p = products.find(x=>x.id==id);
+        alert(p.name + "\nPrice: ₹"+p.price);
+        return;
+      }
+
+      // cart inc/dec
+      const action = e.target.closest('button[data-action]');
+      if(action){
+        const id = action.dataset.id;
+        if(action.dataset.action === 'inc') cart[id].qty +=1;
+        else { cart[id].qty -=1; if(cart[id].qty<=0) delete cart[id]; }
+        updateCartUI();
+        return;
+      }
+
+      // cart toggle
+      if(e.target === cartBtn){
+        const visible = cartPanel.style.display === 'flex';
+        cartPanel.style.display = visible ? 'none' : 'flex';
+      }
+
+      // search
+      if(e.target === document.getElementById('searchBtn')){
+        const q = document.getElementById('searchInput').value.trim().toLowerCase();
+        if(!q){ renderProducts(products); return }
+        const filtered = products.filter(p=>p.name.toLowerCase().includes(q));
+        renderProducts(filtered);
+      }
+    })
+
+    // initial UI update
+    updateCartUI();
+
+    // Checkout (demo)
+    document.getElementById('checkoutBtn').addEventListener('click', ()=>{
+      if(Object.keys(cart).length===0){ alert('Cart is empty') ; return }
+      alert('Proceeding to checkout — demo')
+    })
+
+    // Keyboard: Enter to search
+    document.getElementById('searchInput').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('searchBtn').click() })
+  </script></body>
+</html>
